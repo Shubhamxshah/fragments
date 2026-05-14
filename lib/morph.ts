@@ -1,3 +1,4 @@
+import { introspectionTelemetry } from '@/instrumentation'
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateText, LanguageModel } from 'ai'
 
@@ -7,12 +8,14 @@ export async function applyPatch({
   initialCode,
   codeEdit,
   apiKey,
+  conversationID,
 }: {
   targetFile: string
   instructions: string
   initialCode: string
   codeEdit: string
   apiKey?: string
+  conversationID?: string
 }) {
   // Use provided API key or fall back to env var
   const morphApiKey = apiKey || process.env.MORPH_API_KEY
@@ -32,6 +35,10 @@ export async function applyPatch({
     const { text: mergedCode } = await generateText({
       model: openai('morph-v3-large') as LanguageModel,
       prompt: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
+      experimental_telemetry: introspectionTelemetry(
+        'morph-apply',
+        conversationID,
+      ),
     })
 
     if (!mergedCode) {

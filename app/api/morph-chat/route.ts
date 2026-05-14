@@ -1,5 +1,6 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
+import { introspectionTelemetry } from '@/instrumentation'
 import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
@@ -22,11 +23,13 @@ export async function POST(req: Request) {
     messages,
     model,
     config,
+    conversationID,
     currentFragment,
   }: {
     messages: ModelMessage[]
     model: LLMModel
     config: LLMModelConfig
+    conversationID: string | undefined
     currentFragment: FragmentSchema
   } = await req.json()
 
@@ -70,10 +73,10 @@ ${currentFragment.code}
       messages,
       schema: morphEditSchema,
       maxRetries: 0,
-      experimental_telemetry: {
-        isEnabled: true,
-        functionId: 'morph-chat',
-      },
+      experimental_telemetry: introspectionTelemetry(
+        'fragments-editor',
+        conversationID,
+      ),
       ...modelParams,
     })
 
@@ -85,6 +88,7 @@ ${currentFragment.code}
       instructions: editInstructions.instruction,
       initialCode: currentFragment.code,
       codeEdit: editInstructions.edit,
+      conversationID,
     })
 
     // Return updated fragment in standard format

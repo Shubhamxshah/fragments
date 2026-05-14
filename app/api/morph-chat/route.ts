@@ -4,7 +4,7 @@ import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
-import { generateObject, LanguageModel, CoreMessage } from 'ai'
+import { generateObject, LanguageModel, ModelMessage } from 'ai'
 
 export const maxDuration = 300
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     config,
     currentFragment,
   }: {
-    messages: CoreMessage[]
+    messages: ModelMessage[]
     model: LLMModel
     config: LLMModelConfig
     currentFragment: FragmentSchema
@@ -70,6 +70,10 @@ ${currentFragment.code}
       messages,
       schema: morphEditSchema,
       maxRetries: 0,
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: 'morph-chat',
+      },
       ...modelParams,
     })
 

@@ -17,7 +17,7 @@ import { supabase } from '@/lib/supabase'
 import templates from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { experimental_useObject as useObject } from 'ai/react'
+import { experimental_useObject as useObject } from '@ai-sdk/react'
 import { nanoid } from 'nanoid'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
@@ -54,12 +54,7 @@ export default function Home() {
     process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
   )
 
-  const filteredModels = modelsList.models.filter((model) => {
-    if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
-      return model.providerId !== 'ollama'
-    }
-    return true
-  })
+  const filteredModels = modelsList.models
 
   const defaultModel = filteredModels.find(
     (model) => model.id === 'claude-sonnet-4-20250514',
@@ -89,7 +84,7 @@ export default function Home() {
   const { object, submit, isLoading, stop, error } = useObject({
     api: apiEndpoint,
     schema,
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Error submitting request:', error)
       if (error.message.includes('limit')) {
         setIsRateLimited(true)
@@ -97,7 +92,7 @@ export default function Home() {
 
       setErrorMessage(error.message)
     },
-    onFinish: async ({ object: fragment, error }) => {
+    onFinish: async ({ object: fragment, error }: { object: DeepPartial<FragmentSchema> | undefined, error: unknown }) => {
       if (!error) {
         // send it to /api/sandbox
         console.log('fragment', fragment)

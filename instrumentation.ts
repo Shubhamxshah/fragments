@@ -9,7 +9,7 @@ export function getIntrospectionAISDKIntegrations() {
 
   if (!integration) {
     integration = new IntrospectionAISDKIntegration({
-      serviceName: 'fragments-generator',
+      serviceName: 'fragments-builder',
     })
   }
 
@@ -25,9 +25,11 @@ export function introspectionTelemetry(
   return {
     isEnabled: integrations.length > 0,
     functionId: agentName,
-    metadata: {
-      'gen_ai.conversation.id': conversationId,
-    },
+    metadata: conversationId
+      ? {
+          'gen_ai.conversation.id': conversationId,
+        }
+      : undefined,
     integrations,
   }
 }

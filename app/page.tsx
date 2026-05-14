@@ -18,6 +18,7 @@ import templates from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from '@ai-sdk/react'
+import { nanoid } from 'nanoid'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
@@ -38,6 +39,7 @@ export default function Home() {
   const posthog = usePostHog()
 
   const [result, setResult] = useState<ExecutionResult>()
+  const [conversationID] = useState(() => nanoid())
   const [messages, setMessages] = useState<Message[]>([])
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
   const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
@@ -191,6 +193,7 @@ export default function Home() {
     submit({
       userID: session?.user?.id,
       teamID: userTeam?.id,
+      conversationID,
       messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
@@ -212,6 +215,7 @@ export default function Home() {
     submit({
       userID: session?.user?.id,
       teamID: userTeam?.id,
+      conversationID,
       messages: toAISDKMessages(messages),
       template: currentTemplate,
       model: currentModel,

@@ -5,6 +5,7 @@ import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
+import { introspectionTelemetry } from '@/instrumentation'
 import { streamObject, LanguageModel, ModelMessage } from 'ai'
 
 export const maxDuration = 300
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
     messages,
     userID,
     teamID,
+    conversationID,
     template,
     model,
     config,
@@ -28,6 +30,7 @@ export async function POST(req: Request) {
     messages: ModelMessage[]
     userID: string | undefined
     teamID: string | undefined
+    conversationID: string | undefined
     template: Templates
     model: LLMModel
     config: LLMModelConfig
@@ -61,10 +64,10 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       maxRetries: 0,
-      experimental_telemetry: {
-        isEnabled: true,
-        functionId: 'chat',
-      },
+      experimental_telemetry: introspectionTelemetry(
+        'fragments-generator',
+        conversationID,
+      ),
       ...modelParams,
     })
 

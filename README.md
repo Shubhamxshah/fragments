@@ -112,6 +112,10 @@ SUPABASE_ANON_KEY=
 NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=
 
+# Introspection AI telemetry
+INTROSPECTION_TOKEN=
+INTROSPECTION_SERVICE_NAME=fragments-builder
+
 ### Disabling functionality (when uncommented)
 
 # Disable API key and base URL input in the chat

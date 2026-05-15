@@ -2,9 +2,8 @@
   "name": "streamlit-developer",
   "version": "1.0.0",
   "scripts": {
-    "build:dev": "tsx build.dev.ts",
-    "build:prod": "tsx build.prod.ts",
-    "build": "tsx build.prod.ts"
+    "build:dev": "node init && tsx build.dev.ts",
+    "build:prod": "node init && tsx build.prod.ts",
+    "build": "node init && tsx build.prod.ts"
   }
 }
-  

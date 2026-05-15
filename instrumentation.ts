@@ -21,15 +21,18 @@ export function introspectionTelemetry(
   conversationId?: string,
 ) {
   const integrations = getIntrospectionAISDKIntegrations()
+  const metadata: Record<string, string> = {
+    'gen_ai.agent.name': agentName,
+  }
+
+  if (conversationId) {
+    metadata['gen_ai.conversation.id'] = conversationId
+  }
 
   return {
     isEnabled: integrations.length > 0,
     functionId: agentName,
-    metadata: conversationId
-      ? {
-          'gen_ai.conversation.id': conversationId,
-        }
-      : undefined,
+    metadata,
     integrations,
   }
 }

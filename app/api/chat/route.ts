@@ -6,7 +6,7 @@ import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
 import { introspectionTelemetry } from '@/instrumentation'
-import { streamObject, LanguageModel, CoreMessage } from 'ai'
+import { streamObject, LanguageModel, ModelMessage } from 'ai'
 
 export const maxDuration = 300
 
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     model,
     config,
   }: {
-    messages: CoreMessage[]
+    messages: ModelMessage[]
     userID: string | undefined
     teamID: string | undefined
     conversationID: string | undefined
@@ -58,12 +58,12 @@ export async function POST(req: Request) {
   const modelClient = getModelClient(model, config)
 
   try {
-    const stream = await streamObject({
+    const stream = streamObject({
       model: modelClient as LanguageModel,
       schema,
       system: toPrompt(template),
       messages,
-      maxRetries: 0, // do not retry on errors
+      maxRetries: 0,
       experimental_telemetry: introspectionTelemetry(
         'fragments-generator',
         conversationID,

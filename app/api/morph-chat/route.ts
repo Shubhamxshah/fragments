@@ -5,7 +5,7 @@ import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
-import { generateObject, LanguageModel, CoreMessage } from 'ai'
+import { generateObject, LanguageModel, ModelMessage } from 'ai'
 
 export const maxDuration = 300
 
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     conversationID,
     currentFragment,
   }: {
-    messages: CoreMessage[]
+    messages: ModelMessage[]
     model: LLMModel
     config: LLMModelConfig
     conversationID: string | undefined
